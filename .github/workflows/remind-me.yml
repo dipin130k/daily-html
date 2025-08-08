@@ -1,0 +1,15 @@
+name: Daily Commit Reminder
+
+on:
+  schedule:
+    - cron: '0 20 * * *'  # 8 PM UTC daily reminder
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Send reminder (no commit)
+      run: |
+        echo "Time to make your daily manual commit!"
+        echo "Go to your repo and update daily-log.md"
