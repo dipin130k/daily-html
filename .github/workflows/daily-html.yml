@@ -1,25 +1,53 @@
-plaintext
+name: Daily Inspiration for dipin130k
 
-steps:
-- name: Checkout repository
-  uses: actions/checkout@v4
+on:
+  schedule:
+    - cron: '0 12 * * *'  # Every day at 12:00 UTC
+  workflow_dispatch:
 
-- name: Setup Python
-  uses: actions/setup-python@v5
-  with:
-    python-version: '3.11'
+jobs:
+  daily-html:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
 
-- name: Generate HTML
-  run: python scripts/generate_daily_html.py
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: 'main'  # Your branch name
 
-- name: Commit & push changes
-  run: |
-    git config --local user.email "github-actions[bot]@users.noreply.github.com"
-    git config --local user.name "github-actions[bot]"
-    git add daily_html/ index.html scripts/
-    if git diff --cached --quiet; then
-      echo "No new HTML generated. Skipping commit."
-      exit 0
-    fi
-    git commit -m "Daily HTML: $(date +'%Y-%m-%d')"
-    git push
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Generate HTML
+      run: python scripts/generate_daily_html.py
+
+    - name: Commit & push changes
+      run: |
+        git config --local user.email "garena746130@gmail.com"
+        git config --local user.name "dipin130k"
+        git add daily_html/ index.html
+        if git diff --cached --quiet; then
+          echo "No changes to commit."
+          exit 0
+        fi
+        git commit -m "Daily HTML: $(date +'%Y-%m-%d')"
+        git pull --rebase origin main
+        git push
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        user_name: 'dipin130k'
+        user_email: 'garena746130@gmail.com'
