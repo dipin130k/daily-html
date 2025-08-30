@@ -10,15 +10,24 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pages: write
+      id-token: write
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        ref: 'main'  # Replace with your branch name if different
 
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        # Only if you have a requirements.txt
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Generate HTML
       run: python scripts/generate_daily_html.py
@@ -27,10 +36,17 @@ jobs:
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add daily_html/ index.html scripts/
+        git add daily_html/ index.html
         if git diff --cached --quiet; then
-          echo "No new HTML generated. Skipping commit."
+          echo "No changes to commit."
           exit 0
         fi
         git commit -m "Daily HTML: $(date +'%Y-%m-%d')"
+        git pull --rebase origin main
         git push
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
