@@ -1,6 +1,6 @@
 import os
-import json
-from datetime import datetime, timedelta
+import random
+from datetime import datetime
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -72,34 +72,32 @@ HTML_TEMPLATE = """
             border-radius: 15px;
             padding: 25px;
             margin-top: 30px;
+            text-align: center;
+        }}
+        .quote-container {{
+            margin: 30px 0;
+            padding: 20px;
+            border-left: 4px solid #9b59b6;
         }}
         .quote {{
             font-size: 1.8rem;
             font-style: italic;
-            text-align: center;
-            margin-bottom: 20px;
             line-height: 1.4;
         }}
         .author {{
-            text-align: right;
-            font-size: 1.1rem;
-            opacity: 0.8;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            opacity: 0.9;
         }}
-        .image-placeholder {{
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 25px 0;
-            font-style: italic;
+        .date {{
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #f1c40f;
         }}
         .action-button {{
-            display: block;
-            width: 200px;
+            display: inline-block;
             margin: 30px auto;
-            padding: 12px 20px;
+            padding: 12px 30px;
             background: #9b59b6;
             color: white;
             border: none;
@@ -113,6 +111,11 @@ HTML_TEMPLATE = """
         .action-button:hover {{
             background: #8e44ad;
             transform: scale(1.05);
+        }}
+        .stars {{
+            font-size: 2rem;
+            margin: 10px 0;
+            color: #f1c40f;
         }}
         .day:nth-child(6n+1) {{ background: rgba(231, 76, 60, 0.7); }}
         .day:nth-child(6n+2) {{ background: rgba(46, 204, 113, 0.7); }}
@@ -132,15 +135,16 @@ HTML_TEMPLATE = """
         </div>
         
         <div class="daily-content">
-            <h2>Daily Inspiration for {date}</h2>
-            <div class="quote">"{quote}"</div>
-            <div class="author">- {author}</div>
+            <div class="stars">✨</div>
+            <div class="date">Daily Inspiration</div>
+            <div class="date">{date}</div>
             
-            <div class="image-placeholder">
-                [Your Inspirational Image Here]
+            <div class="quote-container">
+                <div class="quote">"{quote}"</div>
+                <div class="author">- {author}</div>
             </div>
             
-            <p>Today's challenge: {challenge}</p>
+            <div class="stars">🌟</div>
             
             <a href="#" class="action-button">Start My Day Right</a>
         </div>
@@ -149,7 +153,9 @@ HTML_TEMPLATE = """
 </html>
 """
 
+# List of inspirational quotes
 QUOTES = [
+    {"quote": "Don't watch the clock; do what it does. Keep going.", "author": "Sam Levenson"},
     {"quote": "The only way to do great work is to love what you do", "author": "Steve Jobs"},
     {"quote": "Believe you can and you're halfway there", "author": "Theodore Roosevelt"},
     {"quote": "It always seems impossible until it's done", "author": "Nelson Mandela"},
@@ -159,99 +165,8 @@ QUOTES = [
     {"quote": "Happiness is not something ready made. It comes from your own actions", "author": "Dalai Lama"},
     {"quote": "The best time to plant a tree was 20 years ago. The second best time is now", "author": "Chinese Proverb"},
     {"quote": "You miss 100% of the shots you don't take", "author": "Wayne Gretzky"},
-    {"quote": "Whether you think you can or you think you can't, you're right", "author": "Henry Ford"},
-    {"quote": "The journey of a thousand miles begins with one step", "author": "Lao Tzu"},
-    {"quote": "That which does not kill us makes us stronger", "author": "Friedrich Nietzsche"},
-    {"quote": "Life is what happens when you're busy making other plans", "author": "John Lennon"},
-    {"quote": "When the going gets tough, the tough get going", "author": "Joe Kennedy"},
-    {"quote": "You must be the change you wish to see in the world", "author": "Mahatma Gandhi"},
-    {"quote": "You only live once, but if you do it right, once is enough", "author": "Mae West"},
-    {"quote": "Tough times never last, but tough people do", "author": "Robert H. Schuller"},
-    {"quote": "Get busy living or get busy dying", "author": "Stephen King"},
-    {"quote": "Twenty years from now you will be more disappointed by the things that you didn't do than by the ones you did do", "author": "Mark Twain"},
-    {"quote": "Great minds discuss ideas; average minds discuss events; small minds discuss people", "author": "Eleanor Roosevelt"}
+    {"quote": "Whether you think you can or you think you can't, you're right", "author": "Henry Ford"}
 ]
-
-CHALLENGES = [
-    "Compliment three people today",
-    "Learn something new outside your comfort zone",
-    "Spend 15 minutes in meditation or quiet reflection",
-    "Do one act of kindness without expecting anything in return",
-    "Write down three things you're grateful for",
-    "Take a 30-minute walk in nature",
-    "Reach out to someone you haven't spoken to in a while",
-    "Try a new healthy recipe for dinner",
-    "Read a chapter of an inspiring book",
-    "Write a short journal entry about your goals",
-    "Create a small piece of art (drawing, poem, music)",
-    "Exercise for at least 30 minutes",
-    "Declutter one area of your living space",
-    "Set a new personal or professional goal",
-    "Practice a skill you've been wanting to improve",
-    "Watch an educational documentary",
-    "Donate to a cause you care about",
-    "Try a digital detox for 2 hours",
-    "Write a thank-you note to someone who helped you",
-    "Plan your ideal day and try to implement it"
-]
-
-def get_next_quote():
-    """Get the next quote in sequence without repeating until all are used"""
-    # Load state
-    state_file = "quote_state.json"
-    if os.path.exists(state_file):
-        with open(state_file, "r") as f:
-            state = json.load(f)
-    else:
-        state = {"last_used": -1, "used_quotes": []}
-    
-    # Reset if all quotes have been used
-    if len(state["used_quotes"]) >= len(QUOTES):
-        state["used_quotes"] = []
-    
-    # Find next available quote
-    next_index = (state.get("last_used", -1) + 1) % len(QUOTES)
-    while next_index in state["used_quotes"]:
-        next_index = (next_index + 1) % len(QUOTES)
-    
-    # Update state
-    state["last_used"] = next_index
-    state["used_quotes"].append(next_index)
-    
-    # Save state
-    with open(state_file, "w") as f:
-        json.dump(state, f)
-    
-    return QUOTES[next_index]
-
-def get_next_challenge():
-    """Get the next challenge in sequence without repeating until all are used"""
-    # Load state
-    state_file = "challenge_state.json"
-    if os.path.exists(state_file):
-        with open(state_file, "r") as f:
-            state = json.load(f)
-    else:
-        state = {"last_used": -1, "used_challenges": []}
-    
-    # Reset if all challenges have been used
-    if len(state["used_challenges"]) >= len(CHALLENGES):
-        state["used_challenges"] = []
-    
-    # Find next available challenge
-    next_index = (state.get("last_used", -1) + 1) % len(CHALLENGES)
-    while next_index in state["used_challenges"]:
-        next_index = (next_index + 1) % len(CHALLENGES)
-    
-    # Update state
-    state["last_used"] = next_index
-    state["used_challenges"].append(next_index)
-    
-    # Save state
-    with open(state_file, "w") as f:
-        json.dump(state, f)
-    
-    return CHALLENGES[next_index]
 
 def generate_daily_html():
     # Create daily_html directory if not exists
@@ -261,9 +176,8 @@ def generate_daily_html():
     today = datetime.now().strftime("%Y-%m-%d")
     daily_file = f"daily_html/{today}.html"
     
-    # Get next quote and challenge
-    selected_quote = get_next_quote()
-    selected_challenge = get_next_challenge()
+    # Select random quote
+    selected_quote = random.choice(QUOTES)
     
     with open(daily_file, "w") as f:
         # Format the daily content
@@ -271,8 +185,7 @@ def generate_daily_html():
             days="",  # Empty for daily pages
             date=today,
             quote=selected_quote["quote"],
-            author=selected_quote["author"],
-            challenge=selected_challenge
+            author=selected_quote["author"]
         )
         f.write(daily_content)
     
@@ -288,8 +201,7 @@ def generate_daily_html():
         days="\n".join(days),
         date="",
         quote="",
-        author="",
-        challenge=""
+        author=""
     ).replace('<div class="daily-content">', '<div class="daily-content" style="display:none;">')
     
     with open("index.html", "w") as f:
