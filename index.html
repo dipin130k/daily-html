@@ -68,34 +68,32 @@
             border-radius: 15px;
             padding: 25px;
             margin-top: 30px;
+            text-align: center;
+        }
+        .quote-container {
+            margin: 30px 0;
+            padding: 20px;
+            border-left: 4px solid #9b59b6;
         }
         .quote {
             font-size: 1.8rem;
             font-style: italic;
-            text-align: center;
-            margin-bottom: 20px;
             line-height: 1.4;
         }
         .author {
-            text-align: right;
-            font-size: 1.1rem;
-            opacity: 0.8;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            opacity: 0.9;
         }
-        .image-placeholder {
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 25px 0;
-            font-style: italic;
+        .date {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #f1c40f;
         }
         .action-button {
-            display: block;
-            width: 200px;
+            display: inline-block;
             margin: 30px auto;
-            padding: 12px 20px;
+            padding: 12px 30px;
             background: #9b59b6;
             color: white;
             border: none;
@@ -109,6 +107,11 @@
         .action-button:hover {
             background: #8e44ad;
             transform: scale(1.05);
+        }
+        .stars {
+            font-size: 2rem;
+            margin: 10px 0;
+            color: #f1c40f;
         }
         .day:nth-child(6n+1) { background: rgba(231, 76, 60, 0.7); }
         .day:nth-child(6n+2) { background: rgba(46, 204, 113, 0.7); }
@@ -150,15 +153,16 @@
         </div>
         
         <div class="daily-content" style="display:none;">
-            <h2>Daily Inspiration for </h2>
-            <div class="quote">""</div>
-            <div class="author">- </div>
+            <div class="stars">✨</div>
+            <div class="date">Daily Inspiration</div>
+            <div class="date"></div>
             
-            <div class="image-placeholder">
-                [Your Inspirational Image Here]
+            <div class="quote-container">
+                <div class="quote">""</div>
+                <div class="author">- </div>
             </div>
             
-            <p>Today's challenge: </p>
+            <div class="stars">🌟</div>
             
             <a href="#" class="action-button">Start My Day Right</a>
         </div>
