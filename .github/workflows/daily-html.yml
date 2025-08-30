@@ -1,4 +1,4 @@
-name: Daily Inspiration for dipin130k
+name: Daily Inspiration Generator
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  daily-html:
+  generate:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -17,30 +17,26 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        ref: 'main'  # Your branch name
+        ref: 'main'
 
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
     - name: Generate HTML
       run: python scripts/generate_daily_html.py
 
     - name: Commit & push changes
       run: |
-        git config --local user.email "garena746130@gmail.com"
-        git config --local user.name "dipin130k"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
         git add daily_html/ index.html
         if git diff --cached --quiet; then
           echo "No changes to commit."
           exit 0
         fi
-        git commit -m "Daily HTML: $(date +'%Y-%m-%d')"
+        git commit -m "Daily Inspiration: $(date +'%Y-%m-%d')"
         git pull --rebase origin main
         git push
 
@@ -49,5 +45,3 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./
-        user_name: 'dipin130k'
-        user_email: 'garena746130@gmail.com'
