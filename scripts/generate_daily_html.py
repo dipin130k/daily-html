@@ -135,7 +135,7 @@ with open(today_file, "w", encoding="utf-8") as f:
     f.write(custom_html)
 
 # ----------------------------------------------------------------------
-# 7️⃣  Re‑build the archive page (index.html) – unchanged from your original
+# 7️⃣  Re‑build the archive page (index.html) – with "My collection"
 # ----------------------------------------------------------------------
 files = sorted([f for f in os.listdir("daily_html") if f.endswith(".html")], reverse=True)
 
@@ -145,27 +145,43 @@ with open("index.html", "w", encoding="utf-8") as index:
 <meta charset="UTF-8">
 <title>Daily Inspiration Archive</title>
 <style>
-body {font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-      color:white;margin:0;padding:30px;min-height:100vh;}
-.container{max-width:1000px;margin:auto;}
-h1{text-align:center;font-size:3em;margin-bottom:20px;text-shadow:0 2px 10px rgba(0,0,0,0.3);}
-.subtitle{text-align:center;font-size:1.2em;opacity:0.9;margin-bottom:40px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;}
-.card{background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);
-      padding:25px;border-radius:15px;box-shadow:0 8px 25px rgba(0,0,0,0.2);
-      transition:transform .3s ease;}
-.card:hover{transform:translateY(-5px);}
-.date-badge{background:rgba(255,255,255,0.2);padding:8px 15px;
-            border-radius:20px;font-size:.9em;display:inline-block;margin-bottom:15px;}
-a{color:white;text-decoration:none;font-weight:600;font-size:1.1em;}
-a:hover{text-decoration:underline;}
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    color: white; 
+    margin: 0; 
+    padding: 30px; 
+    min-height: 100vh; 
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { text-align: center; font-size: 3em; margin-bottom: 20px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+.subtitle { text-align: center; font-size: 1.2em; opacity: 0.9; margin-bottom: 40px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.card { 
+    background: rgba(255,255,255,0.15); 
+    backdrop-filter: blur(10px); 
+    padding: 25px; 
+    border-radius: 15px; 
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2); 
+    transition: transform 0.3s ease; 
+}
+.card:hover { transform: translateY(-5px); }
+.date-badge { 
+    background: rgba(255,255,255,0.2); 
+    padding: 8px 15px; 
+    border-radius: 20px; 
+    font-size: 0.9em; 
+    display: inline-block; 
+    margin-bottom: 15px; 
+}
+a { color: white; text-decoration: none; font-weight: 600; font-size: 1.1em; }
+a:hover { text-decoration: underline; }
 </style>
 </head><body>
 <div class="container">
     <h1>✨ Daily Inspiration Archive</h1>
-    <div class="subtitle">Your collection of daily motivational pages</div>
-    <div class="grid">""")
+    <div class="subtitle">My collection of daily motivational pages</div>
+    <div class="grid">""") # <-- THIS LINE WAS CHANGED
     for f in files:
         date_str = f.replace(".html", "")
         index.write(f'''
